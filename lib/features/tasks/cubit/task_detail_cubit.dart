@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -357,6 +358,54 @@ class TaskDetailCubit extends Cubit<TaskDetailState> {
     } catch (e) {
       print("Error adding photo to activity: $e");
       return null;
+    }
+  }
+
+  Future<bool> submitDealerRecce({
+    required ActivityRecordModel activity,
+    required int month,
+    required String photoUrl,
+    required String remark,
+    required String status,
+  }) async {
+    final s = state;
+    if (s is! TaskDetailLoaded) return false;
+    try {
+      final currentList = List<Map<String, dynamic>>.from(
+        activity.parsedDealerInfo,
+      );
+
+      final newItem = {
+        'month': month,
+        'photo_url': photoUrl,
+        'remark': remark,
+        'date': DateTime.now().toIso8601String(),
+        'status': status,
+      };
+
+      final index = currentList.indexWhere((item) => item['month'] == month);
+      if (index != -1) {
+        currentList[index] = newItem;
+      } else {
+        currentList.add(newItem);
+      }
+
+      final dealerInfoStr = jsonEncode(currentList);
+
+      final body = {
+        "dealer_info": dealerInfoStr,
+        "photo": activity.photos.toString(),
+        "latitude": activity.latitude,
+        "longitude": activity.longitude,
+        "gps_address": activity.gpsAddress,
+      };
+
+      await _repo.updateActivityRecord(activity.id, body);
+
+      await loadTask(s.task.id);
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 

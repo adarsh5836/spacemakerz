@@ -10,6 +10,7 @@ import '../../../constants/app_colors.dart';
 import '../../../constants/app_text_style.dart';
 import '../../../core/storage/local_storage.dart';
 import '../../../core/enums/app_enums.dart';
+import '../../../common/widgets/exit_confirmation_dialog.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -52,12 +53,19 @@ class HomeView extends StatelessWidget {
         // Safe check: if projects is hidden but currentIndex is somehow 1 (Projects), force redirect to 0 (Dashboard)
         final safeCurrentIndex = (hideProjects && currentIndex == 1) ? 0 : currentIndex;
 
-        return Scaffold(
-          backgroundColor: const Color(0xFFF8FAFC),
-          appBar: _buildAppBar(context, safeCurrentIndex),
-          drawer: const HomeDrawer(),
-          body: _buildBody(safeCurrentIndex),
-          bottomNavigationBar: _buildBottomNavigationBar(context, safeCurrentIndex, hideProjects),
+        return PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (bool didPop, Object? result) async {
+            if (didPop) return;
+            await ExitConfirmationDialog.show(context);
+          },
+          child: Scaffold(
+            backgroundColor: const Color(0xFFF8FAFC),
+            appBar: _buildAppBar(context, safeCurrentIndex),
+            drawer: const HomeDrawer(),
+            body: _buildBody(safeCurrentIndex),
+            bottomNavigationBar: _buildBottomNavigationBar(context, safeCurrentIndex, hideProjects),
+          ),
         );
       },
     );
@@ -110,8 +118,8 @@ class HomeView extends StatelessWidget {
 
   Widget _buildBottomNavigationBar(BuildContext context, int currentIndex, bool hideProjects) {
     return Container(
-      height: 75,
       decoration: BoxDecoration(
+        color: Colors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.1),
@@ -120,36 +128,44 @@ class HomeView extends StatelessWidget {
           ),
         ],
       ),
-      child: BottomNavigationBar(
-        currentIndex: _getBottomBarIndex(currentIndex, hideProjects),
-        onTap: (index) {
-          final actualIdx = _getActualIndex(index, hideProjects);
-          context.read<HomeCubit>().changeTab(actualIdx);
-        },
-        type: BottomNavigationBarType.fixed,
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 64,
+          child: BottomNavigationBar(
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            currentIndex: _getBottomBarIndex(currentIndex, hideProjects),
+            onTap: (index) {
+              final actualIdx = _getActualIndex(index, hideProjects);
+              context.read<HomeCubit>().changeTab(actualIdx);
+            },
+            type: BottomNavigationBarType.fixed,
+            items: [
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined),
+                activeIcon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              if (!hideProjects)
+                const BottomNavigationBarItem(
+                  icon: Icon(Icons.work_outline),
+                  activeIcon: Icon(Icons.work),
+                  label: 'Projects',
+                ),
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.task_outlined),
+                activeIcon: Icon(Icons.task),
+                label: 'Tasks',
+              ),
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline),
+                activeIcon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+            ],
           ),
-          if (!hideProjects)
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.work_outline),
-              activeIcon: Icon(Icons.work),
-              label: 'Projects',
-            ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.task_outlined),
-            activeIcon: Icon(Icons.task),
-            label: 'Tasks',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
+        ),
       ),
     );
   }

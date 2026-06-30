@@ -99,6 +99,8 @@ class UserModel {
   final int status;
   final String updatedDate;
   final String createdDate;
+  final String? latitude;
+  final String? longitude;
 
   const UserModel({
     required this.id,
@@ -119,6 +121,8 @@ class UserModel {
     required this.status,
     required this.updatedDate,
     required this.createdDate,
+    this.latitude,
+    this.longitude,
   });
 
   // Helper to map roleType (int) to application's local UserRole enum
@@ -170,6 +174,8 @@ class UserModel {
         json['updated_date'] as String? ?? json['updated_at'] as String? ?? '',
     createdDate:
         json['created_date'] as String? ?? json['created_at'] as String? ?? '',
+    latitude: json['latitude']?.toString(),
+    longitude: json['longitude']?.toString(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -191,5 +197,7 @@ class UserModel {
     'status': status,
     'updated_date': updatedDate,
     'created_date': createdDate,
+    'latitude': latitude,
+    'longitude': longitude,
   };
 }

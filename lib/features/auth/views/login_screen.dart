@@ -11,6 +11,7 @@ import '../../../constants/app_text_style.dart';
 import '../../../core/utils/app_regex.dart';
 import '../../../routes/route_names.dart';
 import '../cubit/auth_cubit.dart';
+import '../../../common/widgets/exit_confirmation_dialog.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -50,7 +51,13 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           }
         },
-        child: Scaffold(
+        child: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (bool didPop, Object? result) async {
+            if (didPop) return;
+            await ExitConfirmationDialog.show(context);
+          },
+          child: Scaffold(
           body: SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -224,7 +231,8 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-    );
+    ),
+  );
   }
 
   Widget _hint(String role, String creds) => Padding(

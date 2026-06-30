@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'task_model.dart';
 
 class ActivityRecordModel {
@@ -20,10 +21,14 @@ class ActivityRecordModel {
   final String? remark1;
   final int? viewId;
   final String? distanceFromLast;
+  final String? district;
+  final String? tehsil;
+  final String? village;
   final int? status;
   final String? createdDate;
   final String? updatedDate;
   final int? timestamps;
+  final String? dealerInfo;
 
   const ActivityRecordModel({
     required this.id,
@@ -45,26 +50,33 @@ class ActivityRecordModel {
     this.remark1,
     this.viewId,
     this.distanceFromLast,
+    this.district,
+    this.tehsil,
+    this.village,
     this.status,
     this.createdDate,
     this.updatedDate,
     this.timestamps,
+    this.dealerInfo,
   });
 
   factory ActivityRecordModel.fromJson(Map<String, dynamic> json) {
     final photoVal = json['photo'];
     List<String> parsedPhotos = [];
     if (photoVal is List) {
-      parsedPhotos = photoVal.map((e) {
-        var s = e.toString().trim();
-        if (s.startsWith('[')) {
-          s = s.substring(1).trim();
-        }
-        if (s.endsWith(']')) {
-          s = s.substring(0, s.length - 1).trim();
-        }
-        return s.replaceAll('"', '').replaceAll("'", "");
-      }).where((s) => s.isNotEmpty).toList();
+      parsedPhotos = photoVal
+          .map((e) {
+            var s = e.toString().trim();
+            if (s.startsWith('[')) {
+              s = s.substring(1).trim();
+            }
+            if (s.endsWith(']')) {
+              s = s.substring(0, s.length - 1).trim();
+            }
+            return s.replaceAll('"', '').replaceAll("'", "");
+          })
+          .where((s) => s.isNotEmpty)
+          .toList();
     } else if (photoVal is String) {
       var s = photoVal.trim();
       if (s.startsWith('[') && s.endsWith(']')) {
@@ -90,7 +102,9 @@ class ActivityRecordModel {
     String? parsedTaskId;
     if (json['task_id'] != null) {
       if (json['task_id'] is Map) {
-        parsedTask = TaskModel.fromJson(json['task_id'] as Map<String, dynamic>);
+        parsedTask = TaskModel.fromJson(
+          json['task_id'] as Map<String, dynamic>,
+        );
         parsedTaskId = parsedTask.id;
       } else {
         parsedTaskId = json['task_id'].toString();
@@ -117,10 +131,27 @@ class ActivityRecordModel {
       remark1: json['remark1'] as String?,
       viewId: json['view_id'] as int?,
       distanceFromLast: json['distance_from_last'] as String?,
+      district: json['district'] as String?,
+      tehsil: json['tehsil'] as String?,
+      village: json['village'] as String?,
       status: json['status'] as int?,
       createdDate: json['created_date'] as String?,
       updatedDate: json['updated_date'] as String?,
       timestamps: (json['timestaps'] ?? json['timestamps']) as int?,
+      dealerInfo: json['dealer_info'] as String?,
     );
+  }
+
+  List<Map<String, dynamic>> get parsedDealerInfo {
+    if (dealerInfo == null || dealerInfo!.isEmpty) return [];
+    try {
+      final decoded = jsonDecode(dealerInfo!);
+      if (decoded is List) {
+        return decoded.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+      }
+    } catch (e) {
+      print("Error parsing dealer_info: $e");
+    }
+    return [];
   }
 }

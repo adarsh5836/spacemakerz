@@ -91,8 +91,8 @@ class TaskCard extends StatelessWidget {
                   const SizedBox(height: 10),
                   _detailRow(
                     Icons.location_on,
-                    'DISTRICT & CITY',
-                    '${task.district} — ${task.cityName}',
+                    'CITY & STATE',
+                    '${task.cityName} — ${task.stateName}',
                   ),
                   const SizedBox(height: 14),
                   Row(

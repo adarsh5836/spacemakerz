@@ -104,8 +104,28 @@ class PhotoCaptureCubit extends Cubit<PhotoCaptureState> {
     required String? address,
     required String remark,
     required String remark1,
+    required String district,
+    required String tehsil,
+    required String village,
     required List<ActivityRecordModel> activities,
   }) async {
+    if (district.trim().isEmpty) {
+      emit(state.copyWith(errorMessage: 'Please enter District.'));
+      return;
+    }
+    if (tehsil.trim().isEmpty) {
+      emit(state.copyWith(errorMessage: 'Please enter Tehsil.'));
+      return;
+    }
+    if (village.trim().isEmpty) {
+      emit(state.copyWith(errorMessage: 'Please enter Village.'));
+      return;
+    }
+    if (remark.trim().isEmpty) {
+      emit(state.copyWith(errorMessage: 'Please enter Remark.'));
+      return;
+    }
+
     if (state.uploadedUrls.length < 3) {
       emit(
         state.copyWith(
@@ -166,15 +186,18 @@ class PhotoCaptureCubit extends Cubit<PhotoCaptureState> {
         "gps_address": address ?? "-",
         "remark": remark,
         "remark1": remark1,
+        "district": district,
+        "tehsil": tehsil,
+        "village": village,
         "view_id": 1,
         "distance_from_last": distanceStr,
         "status": 1,
+        "dealer_info": "[]",
         // "timestaps": DateTime.now().millisecondsSinceEpoch ~/ 1000,
       };
       final response = await _repo.submitActivityRecord(body);
 
-      print("responseddddddddddddd $response");
-      if (response['status'] == true || response.isNotEmpty) {
+      if (response['status'] == true) {
         emit(
           state.copyWith(
             isSubmitting: false,
@@ -183,6 +206,7 @@ class PhotoCaptureCubit extends Cubit<PhotoCaptureState> {
           ),
         );
       } else {
+        print("@@@@@@@@@@@${response}");
         emit(
           state.copyWith(
             isSubmitting: false,

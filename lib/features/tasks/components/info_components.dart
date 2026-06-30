@@ -80,12 +80,22 @@ class _ProjectDetailsCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSizes.p16),
-          _infoRow('Assigned Date', AppDateFormatter.formatDateTime(task.date)),
+          _infoRow(
+            'Start Date',
+            AppDateFormatter.formatDate(task.projectId?.startDate),
+          ),
+          _infoRow(
+            'End Date',
+            AppDateFormatter.formatDate(task.projectId?.endDate),
+          ),
           _infoRow('Dealer', task.displayDealerName),
-          _infoRow('District', task.district),
-          _infoRow('City', task.cityName),
-          if (task.installationLocation != null)
-            _infoRow('Installation Location', task.installationLocation!),
+          _infoRow(
+            'District',
+            task.district.isNotEmpty
+                ? task.district
+                : (task.cityName.isNotEmpty ? task.cityName : "-"),
+          ),
+          _infoRow('State', task.stateName.isNotEmpty ? task.stateName : '-'),
           _infoRowWidget('Status', _StatusBadge(status: task.status)),
           if (task.remarks != null && task.remarks!.isNotEmpty)
             _infoRow('Remarks', task.remarks!),

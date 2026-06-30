@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../app/repositories/tasks_repository.dart';
 import '../../../app/models/activity_record_model.dart';
@@ -17,12 +19,16 @@ import '../../../constants/app_sizes.dart';
 import '../../../constants/app_text_style.dart';
 import '../../../core/enums/app_enums.dart';
 import '../../../core/utils/date_formatter.dart';
+import '../../../core/utils/distance_calculator.dart';
 import '../cubit/task_detail_cubit.dart';
 import '../cubit/task_detail_state.dart';
 import 'photo_capture_screen.dart';
+import 'activity_location_map_screen.dart';
 
 part '../components/info_components.dart';
 part '../components/activity_components.dart';
+part '../components/geo_photo_full_screen.dart';
+part '../components/activity_bottom_sheets.dart';
 
 class TaskDetailsScreen extends StatelessWidget {
   final String taskId;
@@ -127,8 +133,8 @@ class _TaskDetailsView extends StatelessWidget {
                     const SizedBox(height: AppSizes.p16),
 
                     // 4. Location bar (live GPS)
-                    _LocationBar(state: loaded),
-                    const SizedBox(height: AppSizes.p16),
+                    // _LocationBar(state: loaded),
+                    // const SizedBox(height: AppSizes.p16),
 
                     // 5. Task Activity Cards (from backend API)
                     if (loaded.activities.isNotEmpty) ...[
@@ -289,9 +295,7 @@ class _TotalDistanceCard extends StatelessWidget {
     for (final activity in activities) {
       final distStr = activity.distanceFromLast;
       if (distStr == null || distStr.isEmpty) continue;
-      final cleaned = distStr
-          .replaceAll(RegExp(r'[a-zA-Z\s]'), '')
-          .trim();
+      final cleaned = distStr.replaceAll(RegExp(r'[a-zA-Z\s]'), '').trim();
       final value = double.tryParse(cleaned);
       if (value != null) {
         total += value;
@@ -303,7 +307,7 @@ class _TotalDistanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final totalDistance = _calculateTotalDistance();
-    
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

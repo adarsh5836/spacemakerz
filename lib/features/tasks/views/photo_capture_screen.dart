@@ -14,6 +14,7 @@ import '../../../constants/app_sizes.dart';
 import '../../../constants/app_text_style.dart';
 import '../../../common/widgets/app_toast.dart';
 import '../../../common/widgets/common_loader.dart';
+import '../../../common/widgets/common_text_field.dart';
 import '../cubit/photo_capture_cubit.dart';
 import '../cubit/photo_capture_state.dart';
 
@@ -72,12 +73,13 @@ class _PhotoCaptureView extends StatefulWidget {
 }
 
 class _PhotoCaptureViewState extends State<_PhotoCaptureView> {
-  final TextEditingController _remarkController = TextEditingController(
-    text: "Flex installed successfully",
-  );
+  final TextEditingController _remarkController = TextEditingController();
   final TextEditingController _remark1Controller = TextEditingController(
-    text: "Site visit completed and verified",
+    text: "",
   );
+  final TextEditingController _districtController = TextEditingController();
+  final TextEditingController _tehsilController = TextEditingController();
+  final TextEditingController _villageController = TextEditingController();
 
   final ImagePicker _picker = ImagePicker();
 
@@ -85,6 +87,9 @@ class _PhotoCaptureViewState extends State<_PhotoCaptureView> {
   void dispose() {
     _remarkController.dispose();
     _remark1Controller.dispose();
+    _districtController.dispose();
+    _tehsilController.dispose();
+    _villageController.dispose();
     super.dispose();
   }
 
@@ -319,67 +324,67 @@ class _PhotoCaptureViewState extends State<_PhotoCaptureView> {
 
                   const SizedBox(height: 24),
 
+                  const SizedBox(height: 24),
+
                   // Inputs Section
-                  // Text(
-                  //   'Activity Information',
-                  //   style: AppTextStyle.body.copyWith(
-                  //     fontWeight: FontWeight.bold,
-                  //     color: AppColors.textPrimary,
-                  //   ),
-                  // ),
-                  // const SizedBox(height: 12),
+                  Text(
+                    'Activity Information',
+                    style: AppTextStyle.body.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
 
-                  // Container(
-                  //   decoration: BoxDecoration(
-                  //     color: Colors.white,
-                  //     borderRadius: BorderRadius.circular(AppSizes.r16),
-                  //     boxShadow: [
-                  //       BoxShadow(
-                  //         color: Colors.black.withOpacity(0.03),
-                  //         blurRadius: 10,
-                  //         offset: const Offset(0, 4),
-                  //       ),
-                  //     ],
-                  //   ),
-                  //   padding: const EdgeInsets.all(AppSizes.p16),
-                  //   child: Column(
-                  //     children: [
-                  //       TextField(
-                  //         controller: _remarkController,
-                  //         decoration: InputDecoration(
-                  //           labelText: 'Remark',
-                  //           labelStyle: AppTextStyle.caption.copyWith(
-                  //             color: AppColors.textSecondary,
-                  //           ),
-                  //           border: OutlineInputBorder(
-                  //             borderRadius: BorderRadius.circular(AppSizes.r12),
-                  //           ),
-                  //           filled: true,
-                  //           fillColor: const Color(0xFFF8FAFC),
-                  //         ),
-                  //         style: AppTextStyle.body,
-                  //       ),
-                  //       const SizedBox(height: 16),
-                  //       TextField(
-                  //         controller: _remark1Controller,
-                  //         decoration: InputDecoration(
-                  //           labelText: 'Additional Remark',
-                  //           labelStyle: AppTextStyle.caption.copyWith(
-                  //             color: AppColors.textSecondary,
-                  //           ),
-                  //           border: OutlineInputBorder(
-                  //             borderRadius: BorderRadius.circular(AppSizes.r12),
-                  //           ),
-                  //           filled: true,
-                  //           fillColor: const Color(0xFFF8FAFC),
-                  //         ),
-                  //         style: AppTextStyle.body,
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(AppSizes.r16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(AppSizes.p16),
+                    child: Column(
+                      children: [
+                        CommonTextField(
+                          controller: _districtController,
+                          label: 'District *',
+                          hint: 'Enter district',
+                        ),
+                        const SizedBox(height: 16),
+                        CommonTextField(
+                          controller: _tehsilController,
+                          label: 'Tehsil *',
+                          hint: 'Enter tehsil',
+                        ),
+                        const SizedBox(height: 16),
+                        CommonTextField(
+                          controller: _villageController,
+                          label: 'Village *',
+                          hint: 'Enter village',
+                        ),
+                        const SizedBox(height: 16),
+                        CommonTextField(
+                          controller: _remarkController,
+                          label: 'Remark *',
+                          hint: 'Enter remark',
+                        ),
+                        // const SizedBox(height: 16),
+                        // CommonTextField(
+                        //   controller: _remark1Controller,
+                        //   label: 'Additional Remark',
+                        //   hint: 'Enter additional remark',
+                        // ),
+                      ],
+                    ),
+                  ),
 
-                  // const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
                   // GPS Info Card
                   Container(
@@ -487,8 +492,11 @@ class _PhotoCaptureViewState extends State<_PhotoCaptureView> {
                           latitude: widget.initialLatitude ?? 28.6139,
                           longitude: widget.initialLongitude ?? 77.2090,
                           address: widget.initialAddress,
-                          remark: _remarkController.text,
-                          remark1: _remark1Controller.text,
+                          remark: _remarkController.text.trim(),
+                          remark1: _remark1Controller.text.trim(),
+                          district: _districtController.text.trim(),
+                          tehsil: _tehsilController.text.trim(),
+                          village: _villageController.text.trim(),
                           activities: widget.activities,
                         );
                       }

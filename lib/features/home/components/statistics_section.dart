@@ -15,7 +15,8 @@ class StatisticsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TasksCubit(context.read<TasksRepository>())..loadTasks(),
+      create: (context) =>
+          TasksCubit(context.read<TasksRepository>())..loadTasks(),
       child: BlocBuilder<TasksCubit, TasksState>(
         builder: (context, state) {
           int total = 0;
@@ -26,9 +27,13 @@ class StatisticsSection extends StatelessWidget {
           if (state is TasksLoaded) {
             final tasks = state.tasks;
             total = tasks.length;
-            completed = tasks.where((t) => t.status == TaskStatus.completed).length;
+            completed = tasks
+                .where((t) => t.status == TaskStatus.completed)
+                .length;
             pending = tasks.where((t) => t.status == TaskStatus.pending).length;
-            rejected = tasks.where((t) => t.status == TaskStatus.rejected).length;
+            rejected = tasks
+                .where((t) => t.status == TaskStatus.rejected)
+                .length;
           }
 
           return Column(
@@ -52,7 +57,7 @@ class StatisticsSection extends StatelessWidget {
                   Expanded(
                     child: _buildStatCard(
                       icon: Icons.pending_actions,
-                      title: 'Pending Tasks',
+                      title: 'Assigned Tasks',
                       value: pending.toString(),
                       iconColor: Colors.pink.shade600,
                       iconBgColor: Colors.pink.shade100,
@@ -115,7 +120,10 @@ class StatisticsSection extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppSizes.r16),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: AppSizes.p16, horizontal: AppSizes.p12),
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSizes.p16,
+          horizontal: AppSizes.p12,
+        ),
         decoration: BoxDecoration(
           color: AppColors.surfaceWhite,
           borderRadius: BorderRadius.circular(AppSizes.r16),
